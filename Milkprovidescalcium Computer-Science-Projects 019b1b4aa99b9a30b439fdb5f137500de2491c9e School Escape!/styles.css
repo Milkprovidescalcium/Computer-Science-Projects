@@ -1,0 +1,149 @@
+body{
+    font-family: Arial, sans-serif;
+    overflow:hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    background-color: #ffffff;
+} 
+
+
+main{
+    display: flex; 
+    justify-content: center; 
+    width: 100%;
+    height:100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.input{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+    height: 100%;
+    position:absolute;
+}
+.container{
+    position:relative;
+    text-align:center;
+}
+h1{
+    background: -webkit-linear-gradient(#9f3333,#e47234);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.heading{
+    display:flex;
+    flex-direction: column;
+    position:absolute;
+    -webkit-user-select: none;
+    user-select: none;
+}
+.result{
+    position: relative;
+    margin-top: 10px;
+}
+/*  */
+.info-circle{
+    display: block;
+    height: 40px;
+    width: 40px;
+    line-height: 40px; /*used to center text vertically*/
+    -moz-border-radius: 50%; 
+    border-radius: 50%; 
+
+    background-color: black;
+    color: white;
+    text-align: center;
+    font-size: 30px;
+
+    -webkit-user-select: none;
+    user-select: none;
+    transition: all 0.1s ease;
+}
+.info-circle:hover{
+
+    transform: scale(1);
+    cursor: pointer; 
+    color: rgb(0, 0, 0);
+    background-color: rgb(255, 255, 255);
+    border: 3px solid #b94444;
+
+}
+.side-info{
+    visibility: hidden;
+    margin-left:0;
+    height: 100vh;
+    width:100vw;
+    text-align: left;
+    float:left;
+    position:relative;
+    z-index: -1;
+
+}
+
+.info{
+    position: absolute;
+    float:left;
+    line-height:1.5;
+}
+
+.room-input{
+    padding:12px;
+    border-color:#e28b5c;
+    border-radius:4px;
+    font-weight: bold;
+    font-size:15px;
+}
+.room-input:focus{
+    background: #fffdfb; 
+    border: 3px solid #b94444;
+
+    font-weight:bold;
+
+    outline: none;
+}
+.room-input:hover{
+    background: #fffdfb; 
+    border: 3px solid #b94444;
+
+    font-weight:bold;
+
+}
+@layer base {
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+/* okay so I have no idea what the hell this does I just copied it off of stackoverflow, it just removes the weird arrow dropdown thing on number input buttons */
+
+.submit-button{
+    background: -webkit-linear-gradient(#b94444,#e47234);
+
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius:7px;
+    transition: all 0.1s ease;
+    font-weight:bold;
+}
+.submit-button:hover{
+    background: #fffdfb; 
+    border: 3px solid #b94444;
+    color:#b94444;
+    font-weight:bold;
+    cursor: pointer; 
+}
+label{
+    color: #8a2b2b;
+    font-weight:bold;
+}
