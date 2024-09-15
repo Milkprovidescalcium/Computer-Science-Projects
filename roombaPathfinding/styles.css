@@ -12,7 +12,7 @@ h1{
 }
 .container-container{
     height:500px;
-    width: 500px;
+    aspect-ratio: 3/2;
     border:10px solid red;
     position:absolute;
     top:50%;
@@ -21,7 +21,7 @@ h1{
 }
 .background{
     height:500px;
-    width:500px;
+    aspect-ratio: 3/2;
     background-image:url('sprites/carpet.jpg');
     position:absolute;
     top:50%;
@@ -45,7 +45,7 @@ h1{
     /* background-image: url('sprites/cookie.png'); */
     background-color: green;
     position:absolute;
-
+    display: block;
 }
 
 .sightLeft{
@@ -70,7 +70,17 @@ h1{
 .obstacle{
     height:50px;
     aspect-ratio: 16/9;
-
     background-color: blue;
+    border:5px solid red;
     position:absolute;
+}
+
+.spawn-area{
+    height:400px;
+    aspect-ratio: 3/2;
+    border:10px solid red;
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-50%)
 }
