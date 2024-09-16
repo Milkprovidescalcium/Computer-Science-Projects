@@ -210,17 +210,16 @@ function update(){
  
          }
      } else {
-         posX = goalX
-         posY = goalY
+
+     
 
          x = posX;
          y = posY;
 
-         cancelAnimationFrame(update);
+        cancelAnimationFrame(update);
 
-         setTimeout(()=>{
-            requestAnimationFrame(roamState);
-         },1000);
+        requestAnimationFrame(roamState);
+
        
          return{
              currentX:player.offsetLeft + player.offsetWidth,
