@@ -172,14 +172,26 @@ let deltaX = speed* Math.cos(angle) //I guess this calculated the angle?
 let deltaY = speed* Math.sin(angle)
 
 
-
+function isCollide(a, b) {
+    const aRect = a.getBoundingClientRect();
+    const bRect = b.getBoundingClientRect();
+    
+    return !( //revamped collision code copied from stackOverflow
+        (aRect.bottom < bRect.top) ||
+        (aRect.top > bRect.bottom) ||
+        (aRect.right < bRect.left) ||
+        (aRect.left > bRect.right)
+    );//this is like, a bool return type? It returns a boolean based on the condition (which is the collision logic in this case)
+}
 
 
 let arrayCount = 1;
 let temp;
 function update(){
 
- if(posX >= goalX-10 && posY >= goalY -10){
+    temp = document.getElementById(nearestPoint.index)
+
+ if(isCollide(player, temp)){
 
      visitedJunk.push(nearestPoint.index);
      temp = document.getElementById(nearestPoint.index)
@@ -205,7 +217,11 @@ function update(){
          y = posY;
 
          cancelAnimationFrame(update);
-         requestAnimationFrame(roamState);
+
+         setTimeout(()=>{
+            requestAnimationFrame(roamState);
+         },1000);
+       
          return{
              currentX:player.offsetLeft + player.offsetWidth,
              currentY:player.offsetTop + player.offsetHeight
