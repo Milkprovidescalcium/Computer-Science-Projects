@@ -73,12 +73,14 @@ h1{
     background-color: blue;
     border:5px solid red;
     position:absolute;
+    /* overflow: auto;
+    resize: both; */
 }
 
 .spawn-area{
     height:400px;
     aspect-ratio: 3/2;
-    border:10px solid red;
+    /* border:10px solid red; */
     position:absolute;
     top:50%;
     left:50%;

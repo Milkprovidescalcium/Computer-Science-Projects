@@ -40,8 +40,8 @@ for(let i = 0; i < 4; i++){
  let randX = Math.floor(Math.random()*(spawnWidth - 89)) //minusing 89 to adjust for the width of the obstacle, which I had to find through an aspect-ratio calculator since past me was stupid and tried to try new things
  let randY = Math.floor(Math.random()*(spawnHeight - 89))
  const div = document.createElement("div");
- console.log(spawnHeight)
- console.log(spawnWidth)
+//  console.log(spawnHeight)
+//  console.log(spawnWidth)
  
  div.className = 'obstacle';
  div.id = 'obstacle' + obstacleCount
@@ -83,6 +83,7 @@ document.getElementById('startButton').addEventListener('click',()=>{
 
 });
 
+let direction = ' '
 //ROAM STATE---------------------------------------------------------------------
 function roamState(){
  speed = 2;
@@ -93,20 +94,45 @@ function roamState(){
  if(y+playerHeight >= boxHeight || y < 0){ //vertical check
      dirY *= -1;
  }
+    if(dirX < 0 && dirY > 0){
+        direction = 'SW'
+    }
+    else if(dirX > 0 && dirY > 0){
+        direction = 'SE'
+    }
+    else if(dirX < 0 && dirY < 0){
+        direction = 'NW'
+    }
+    else if(dirX > 0 && dirY < 0){
+        direction = 'NE'
+    }else{
+        direction = ' '
+    }
 
-console.log('dirX: ' + dirX)
-console.log('dirY: ' + dirY)
+// console.log('dirX: ' + dirX)
+// console.log('dirY: ' + dirY)
 
- for(let i = 0; i<obstaclesArray.length;i++){
+ for(let i = 0; i < obstaclesArray.length;i++){
     // console.log(obstaclesArray[i])
     if(isCollide(player, obstaclesArray[i])){
         // console.log('collided with box')
-        
-        dirX *= -1;
-        dirY *= -1;
-
- 
-        break;
+    
+        switch (direction){
+            case 'SW':
+                dirX *= -1;
+            break;
+            case 'SE':
+                dirY *= -1;
+            break;
+            case 'NW':
+                dirY *= -1;
+            break;
+            case 'NE':
+                dirX *= -1;
+            break;
+            default:
+                console.log('no collision')
+        }
     }
  }
 
@@ -117,8 +143,6 @@ console.log('dirY: ' + dirY)
  player.style.top = y + 'px'
  requestAnimationFrame(roamState); //keep calling it. I heard this is called "recursion"
 }
-
-
 //ROAM STATE---------------------------------------------------------------------
 
 let coordinates = {
@@ -138,10 +162,6 @@ findPoint()
 //* solution!: find the nearest junk by using the distance formula (thanks physics) to find the nearest 'junk'!
 console.log('x values: ' + coordinates.x)
 console.log('y values: '+ coordinates.y)
-
-
-
-
 
 
 let posX = 0;
@@ -167,16 +187,12 @@ function findNearest(){
          minDistance = distance
          nearestIndex = i; //the newest index, gonna use this for the arrays
      }
-
  }
- 
-
      return{
          x:coordinates.x[nearestIndex],
          y:coordinates.y[nearestIndex],
          index: nearestIndex
      };
- 
 }
 findNearest()
 let nearestPoint = findNearest(); //wow, calling the function to extract the variables returned
@@ -203,24 +219,11 @@ function isCollide(a, b) {//OMG A REUSABLE COLLIDE FUNCTION WHY DIDN'T I THINK O
     );//this is like, a bool return type? It returns a boolean based on the condition (which is the collision logic in this case)
 }
 
-function isCollide(a, b) {
-    const aRect = a.getBoundingClientRect();
-    const bRect = b.getBoundingClientRect();
-
-    return !(
-        aRect.bottom < bRect.top ||
-        aRect.top > bRect.bottom ||
-        aRect.right < bRect.left ||
-        aRect.left > bRect.right
-    );
-}
-
-
 let arrayCount = 1;
 let temp;
 function update(){
 
-    temp = document.getElementById(nearestPoint.index)
+ temp = document.getElementById(nearestPoint.index)
 
  if(isCollide(player, temp)){
 
@@ -263,6 +266,19 @@ function update(){
      posY += deltaY
  
  }
+// console.log('delta x '+deltaX)
+// console.log('delta y '+deltaY)
+
+ for(let i = 0; i < obstaclesArray.length;i++){
+    // console.log(obstaclesArray[i])
+    if(isCollide(player, obstaclesArray[i])){
+        // console.log('collided with box')
+
+        posX -= deltaX
+        posY -= deltaY
+        trace(obstaclesArray[i])
+    }
+ }
  player.style.left = posX + 'px'
  player.style.top = posY + 'px'
 
@@ -273,3 +289,69 @@ update()
 
 let currentPlayerX = update.currentX
 let currentPlayerY = update.currentY
+
+
+
+
+function detectCollisionDirection(obj1, obj2) {
+    const bounds1 = obj1.getBounds();
+    const bounds2 = obj2.getBounds();
+    
+    // Calculate the overlap distances
+    const overlapX = Math.min(bounds1.right - bounds2.left, bounds2.right - bounds1.left);
+    const overlapY = Math.min(bounds1.bottom - bounds2.top, bounds2.bottom - bounds1.top);
+
+    // Determine the direction of the collision
+    if (overlapX < overlapY) {
+        // Horizontal collision
+        if (obj1.x + obj1.width / 2 < obj2.x + obj2.width / 2) {
+            return 'left';
+        } else {
+            return 'right';
+        }
+    } else {
+        // Vertical collision
+        if (obj1.y + obj1.height / 2 < obj2.y + obj2.height / 2) {
+            return 'top';
+        } else {
+            return 'bottom';
+        }
+    }
+}
+
+
+
+function trace(obstacle){
+//!NOT WORKING---------------------------
+    //?negative x = moving left
+    //?negative y = moving up
+    //?positive x = moving right
+    //?position y = moving down 
+
+    if(deltaX < 0 && deltaY > 0){
+        direction = 'SW'
+        deltaX *= -1
+    }
+    else if(deltaX > 0 && deltaY > 0){
+        direction = 'SE'
+        deltaX *= -1
+    }
+    else if(deltaX < 0 && deltaY < 0){
+        direction = 'NW'
+        deltaX *= -1
+    }
+    else if(deltaX > 0 && deltaY < 0){
+        direction = 'NE'
+        deltaX *= -1
+    }else{
+        direction = ' '
+    }
+
+    // console.log('collided')
+    let obstacleWidth = obstacle.offsetWidth
+    let obstacleHeight = obstacle.offsetHeight
+    // console.log('width ' + obstacleWidth)
+    // console.log('height ' + obstacleHeight)
+}
+
+//TODO: Make 'pathfinding' by, first detecting collision and then tracing around the object based on it's direction
