@@ -30,7 +30,7 @@ function randomDirection(){
 }
 
 
-
+let obstaclesArray = []
 
 
 //PLACING OBSTACLES--------------------------------------------------------------
@@ -44,10 +44,12 @@ for(let i = 0; i < 4; i++){
  console.log(spawnWidth)
  
  div.className = 'obstacle';
+ div.id = 'obstacle' + obstacleCount
  // div.id = obstacleCount;
  box.appendChild(div)
  div.style.left = (spawnRect.left - containerRect.left + randX) + 'px'; //Using the gbcr lefts ro adjust some stuff I do not understand about container offsets 
  div.style.top = (spawnRect.top - containerRect.top + randY) + 'px';
+ obstaclesArray.push(div)
  obstacleCount++;
 }
 //PLACING OBSTACLES--------------------------------------------------------------
@@ -75,7 +77,6 @@ let count = 0;
 document.getElementById('startButton').addEventListener('click',()=>{
 
 
-//TODO: find how far the junk is from the roomba, and then make the roomba go to the junk with the least distance  beteween them
 
 
 
@@ -92,6 +93,24 @@ function roamState(){
  if(y+playerHeight >= boxHeight || y < 0){ //vertical check
      dirY *= -1;
  }
+
+console.log('dirX: ' + dirX)
+console.log('dirY: ' + dirY)
+
+ for(let i = 0; i<obstaclesArray.length;i++){
+    // console.log(obstaclesArray[i])
+    if(isCollide(player, obstaclesArray[i])){
+        // console.log('collided with box')
+        
+        dirX *= -1;
+        dirY *= -1;
+
+ 
+        break;
+    }
+ }
+
+
  x+=dirX * speed;
  y+=dirY * speed;
  player.style.left = x + 'px'
@@ -172,7 +191,7 @@ let deltaX = speed* Math.cos(angle) //I guess this calculated the angle?
 let deltaY = speed* Math.sin(angle)
 
 
-function isCollide(a, b) {
+function isCollide(a, b) {//OMG A REUSABLE COLLIDE FUNCTION WHY DIDN'T I THINK OF THIS LAST YEAR
     const aRect = a.getBoundingClientRect();
     const bRect = b.getBoundingClientRect();
     
@@ -182,6 +201,18 @@ function isCollide(a, b) {
         (aRect.right < bRect.left) ||
         (aRect.left > bRect.right)
     );//this is like, a bool return type? It returns a boolean based on the condition (which is the collision logic in this case)
+}
+
+function isCollide(a, b) {
+    const aRect = a.getBoundingClientRect();
+    const bRect = b.getBoundingClientRect();
+
+    return !(
+        aRect.bottom < bRect.top ||
+        aRect.top > bRect.bottom ||
+        aRect.right < bRect.left ||
+        aRect.left > bRect.right
+    );
 }
 
 
