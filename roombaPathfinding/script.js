@@ -160,8 +160,8 @@ function findPoint(){
 findPoint()
 //! problem, when the roomba is moving, the x and y values are MISMATCHED, since I yknow, tried to sort them
 //* solution!: find the nearest junk by using the distance formula (thanks physics) to find the nearest 'junk'!
-console.log('x values: ' + coordinates.x)
-console.log('y values: '+ coordinates.y)
+// console.log('x values: ' + coordinates.x)
+// console.log('y values: '+ coordinates.y)
 
 
 let posX = 0;
@@ -269,7 +269,10 @@ function update(){
     if(isCollide(player, obstaclesArray[i])){
         // console.log('collided with box')
         cancelAnimationFrame(update);
-        bounce(obstaclesArray[i])
+        // console.log(obstaclesArray[i])
+        reverse(obstaclesArray[i])
+        return;
+
     }
 
  
@@ -291,36 +294,26 @@ let currentPlayerY = update.currentY
 
 let duration = 2000;
 let startTime = Date.now();//grabs the current time in milleseconds
-function bounce(obstacle){
+
+
+let movedX = 0
+let movedY = 0
+function reverse(obstacle){
     // console.log('collided')
-//!NOT WORKING---------------------------
-    //?negative x = moving left
-    //?negative y = moving up
-    //?positive x = moving right
-    //?position y = moving down 
 
+    if (targets > 0) {
+        nearestPoint = findNearest();
+        if (nearestPoint) { //this if-statment checks if there is a nearest point(if 'nearestPoint' is not null of undefined)
+            goalX = nearestPoint.x;
+            goalY = nearestPoint.y;
+            angle = Math.atan2(goalY - posY, goalX - posX);
+            deltaX = speed * Math.cos(angle);
+            deltaY = speed * Math.sin(angle);
 
-    
-    
-    function animate(){
-        let elapsedTime = Date.now() - startTime;
-        if(elapsedTime < duration){ //if still animating
-
-
-
-            // player.style.left = posX + 'px'
-            // player.style.top = posY + 'px'
-
-            requestAnimationFrame(animate);
-        }else{//animation is finished
-
-
-
-            requestAnimationFrame(update);
-            return;
         }
     }
-    animate();
+    
+    // requestAnimationFrame(reverse)
 }
 
 //TODO: Make 'pathfinding' by, first detecting collision and then tracing around the object based on it's direction
