@@ -244,17 +244,10 @@ function update(){
  
          }
      } else {
-
-     
-
          x = posX;
          y = posY;
-
         cancelAnimationFrame(update);
-
         requestAnimationFrame(roamState);
-
-       
          return{
              currentX:player.offsetLeft + player.offsetWidth,
              currentY:player.offsetTop + player.offsetHeight
@@ -268,16 +261,19 @@ function update(){
  }
 // console.log('delta x '+deltaX)
 // console.log('delta y '+deltaY)
+// console.log('dirX: ' + dirX)
+// console.log('dirY: ' + dirY)
 
  for(let i = 0; i < obstaclesArray.length;i++){
     // console.log(obstaclesArray[i])
     if(isCollide(player, obstaclesArray[i])){
         // console.log('collided with box')
-
-        posX -= deltaX
-        posY -= deltaY
-        trace(obstaclesArray[i])
+        cancelAnimationFrame(update);
+        bounce(obstaclesArray[i])
     }
+
+ 
+    // console.log(collisionDirection)
  }
  player.style.left = posX + 'px'
  player.style.top = posY + 'px'
@@ -293,65 +289,38 @@ let currentPlayerY = update.currentY
 
 
 
-function detectCollisionDirection(obj1, obj2) {
-    const bounds1 = obj1.getBounds();
-    const bounds2 = obj2.getBounds();
-    
-    // Calculate the overlap distances
-    const overlapX = Math.min(bounds1.right - bounds2.left, bounds2.right - bounds1.left);
-    const overlapY = Math.min(bounds1.bottom - bounds2.top, bounds2.bottom - bounds1.top);
-
-    // Determine the direction of the collision
-    if (overlapX < overlapY) {
-        // Horizontal collision
-        if (obj1.x + obj1.width / 2 < obj2.x + obj2.width / 2) {
-            return 'left';
-        } else {
-            return 'right';
-        }
-    } else {
-        // Vertical collision
-        if (obj1.y + obj1.height / 2 < obj2.y + obj2.height / 2) {
-            return 'top';
-        } else {
-            return 'bottom';
-        }
-    }
-}
-
-
-
-function trace(obstacle){
+let duration = 2000;
+let startTime = Date.now();//grabs the current time in milleseconds
+function bounce(obstacle){
+    // console.log('collided')
 //!NOT WORKING---------------------------
     //?negative x = moving left
     //?negative y = moving up
     //?positive x = moving right
     //?position y = moving down 
 
-    if(deltaX < 0 && deltaY > 0){
-        direction = 'SW'
-        deltaX *= -1
-    }
-    else if(deltaX > 0 && deltaY > 0){
-        direction = 'SE'
-        deltaX *= -1
-    }
-    else if(deltaX < 0 && deltaY < 0){
-        direction = 'NW'
-        deltaX *= -1
-    }
-    else if(deltaX > 0 && deltaY < 0){
-        direction = 'NE'
-        deltaX *= -1
-    }else{
-        direction = ' '
-    }
 
-    // console.log('collided')
-    let obstacleWidth = obstacle.offsetWidth
-    let obstacleHeight = obstacle.offsetHeight
-    // console.log('width ' + obstacleWidth)
-    // console.log('height ' + obstacleHeight)
+    
+    
+    function animate(){
+        let elapsedTime = Date.now() - startTime;
+        if(elapsedTime < duration){ //if still animating
+
+
+
+            // player.style.left = posX + 'px'
+            // player.style.top = posY + 'px'
+
+            requestAnimationFrame(animate);
+        }else{//animation is finished
+
+
+
+            requestAnimationFrame(update);
+            return;
+        }
+    }
+    animate();
 }
 
 //TODO: Make 'pathfinding' by, first detecting collision and then tracing around the object based on it's direction
