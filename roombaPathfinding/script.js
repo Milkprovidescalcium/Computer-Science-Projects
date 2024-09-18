@@ -221,7 +221,22 @@ function isCollide(a, b) {//OMG A REUSABLE COLLIDE FUNCTION WHY DIDN'T I THINK O
 
 let arrayCount = 1;
 let temp;
+
+
+
+
+
+let isReversing = false; // Indicates if the object is currently reversing
+let reverseStartTime; // Store when reverse started to manage duration
+
+
+
 function update(){
+
+    if (isReversing) {
+        // If currently reversing, don't proceed with normal update
+        return;
+    }
 
  temp = document.getElementById(nearestPoint.index)
 
@@ -292,28 +307,43 @@ let currentPlayerY = update.currentY
 
 
 
-let duration = 2000;
-let startTime = Date.now();//grabs the current time in milleseconds
+let duration = 50;
+let elapsed = 0
 
-
-let movedX = 0
-let movedY = 0
+let reverseAngle;
 function reverse(obstacle){
-    // console.log('collided')
 
-    if (targets > 0) {
-        nearestPoint = findNearest();
-        if (nearestPoint) { //this if-statment checks if there is a nearest point(if 'nearestPoint' is not null of undefined)
-            goalX = nearestPoint.x;
-            goalY = nearestPoint.y;
-            angle = Math.atan2(goalY - posY, goalX - posX);
-            deltaX = speed * Math.cos(angle);
-            deltaY = speed * Math.sin(angle);
-
-        }
+    if (!isReversing) {
+        // Set reversing state and start time
+        isReversing = true;
+        reverseStartTime = Date.now();
+        
+        // Calculate reverse direction (180 degrees)
+        reverseAngle = Math.atan2(goalY - posY, goalX - posX) + Math.PI;
+        deltaX = speed * Math.cos(reverseAngle);
+        deltaY = speed * Math.sin(reverseAngle);
     }
+    if (elapsed <= duration) {
+        posX += deltaX
+        posY += deltaY
     
-    // requestAnimationFrame(reverse)
+
+        // Continue reversing
+        requestAnimationFrame(() => reverse(obstacle));
+
+    }else{
+        isReversing = false;
+        update()
+        return;
+    }
+
+
+
+    
+
+
+   
+    requestAnimationFrame(reverse)
 }
 
 //TODO: Make 'pathfinding' by, first detecting collision and then tracing around the object based on it's direction
