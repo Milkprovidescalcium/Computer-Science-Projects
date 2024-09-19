@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roomba Pathfinding Extravaganza!</title>
+    <style>
+        /* Your CSS styles remain unchanged */
+        body{
+            user-select:none;
+            -webkit-user-select: none; /* Safari */
+        }
+        h1 {
+            color: red;
+            position: absolute;
+        }
+        .container {
+            height: 100vh;
+            width: 100vh;
+            position: relative;
+        }
+        .container-container {
+            height: 500px;
+            aspect-ratio: 3/2;
+            border: 10px solid red;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .background {
+            height: 500px;
+            aspect-ratio: 3/2;
+            background-image: url('sprites/carpet.jpg');
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+        }
+        .roomba {
+            height: 56.66px;
+            width: 56.66px;
+            background-image: url('sprites/roomba.gif');
+            background-color: black;
+            z-index: 3;
+            position: absolute;
+            left: 0px;
+            top: 0px;
+        }
+        .junk {
+            height: 13.33px;
+            width: 13.33px;
+            background-color: green;
+            position: absolute;
+            display: block;
+        }
+        .obstacle {
+            height: 50px;
+            aspect-ratio: 16/9;
+            background-color: blue;
+            border: 5px solid red;
+            position: absolute;
+        }
+        .spawn-area {
+            height: 400px;
+            aspect-ratio: 3/2;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .slider{
+            position:absolute;
+            margin:5px;
+        }
+        .container-stuff{
+            display:flex;
+            flex-direction: column;
+            float:left;
+            width:50px;
+            height:100vh;
+        }
+        .start-button{
+            position:absolute;
+            margin:5px;
+        }
+        
+.slider {
+  -webkit-appearance: none;
+  width: 150px;
+  height: 25px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: red;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: red;
+  cursor: pointer;
+}
+
+    </style>
+</head>
+<body>
+
+    <div class="container-stuff">
+        <h1>Roomba!</h1>
+
+        <input type="range" min="1" max="50" value="1" class="slider" id="speedSlider">
+
+
+    </div>
+    <main>
+        <div class="container-container" id="containerContainer">
+            <div class="spawn-area" id="spawnArea"></div>
+            <div id="roomba" class="roomba"></div>
+        </div>
+        <div class="background"></div>
+
+   
+    </main>
+
+
+
+    <script>
+
+
+
+        let x = 0,
+            y = 0,
+            dirX = 1,
+            dirY = 1;
+        let speed = 3;
+
+        const player = document.getElementById('roomba');
+        const box = document.getElementById('containerContainer');
+        const spawn = document.getElementById('spawnArea');
+
+        const spawnRect = spawn.getBoundingClientRect();
+        const containerRect = box.getBoundingClientRect();
+        let obstaclesArray = [];
+        let junkCount = 0;
+        let visitedJunk = [];
+        let targets;
+
+        // Place obstacles
+        for (let i = 0; i < 4; i++) {
+            let randX = Math.floor(Math.random() * (spawn.clientWidth - 89));
+            let randY = Math.floor(Math.random() * (spawn.clientHeight - 89));
+            const div = document.createElement("div");
+            div.className = 'obstacle';
+            box.appendChild(div);
+            div.style.left = (spawnRect.left - containerRect.left + randX) + 'px';
+            div.style.top = (spawnRect.top - containerRect.top + randY) + 'px';
+            obstaclesArray.push(div);
+        }
+
+        let junknum = 3;
+        // Place junk
+        for (let i = 0; i < junknum; i++) {
+            let randX = Math.floor(Math.random() * spawn.clientWidth);
+            let randY = Math.floor(Math.random() * spawn.clientHeight);
+            const div = document.createElement("div");
+            div.className = 'junk';
+            box.appendChild(div);
+            div.style.left = (spawnRect.left - containerRect.left + randX) + 'px';
+            div.style.top = (spawnRect.top - containerRect.top + randY) + 'px';
+            junkCount++;
+        }
+        targets = junkCount;
+
+ 
+
+
+
+
+        const slider = document.getElementById('speedSlider');
+        slider.value = 2;
+
+
+        function roamState() {
+
+            speed = slider.value
+            // console.log('in function')
+            if (x + player.clientWidth >= box.clientWidth || x < 0) dirX *= -1;
+            if (y + player.clientHeight >= box.clientHeight || y < 0) dirY *= -1;
+
+        
+            if(dirX < 0 && dirY > 0){
+                direction = 'SW'
+            }
+            else if(dirX > 0 && dirY > 0){
+                direction = 'SE'
+            }
+            else if(dirX < 0 && dirY < 0){
+                direction = 'NW'
+            }
+            else if(dirX > 0 && dirY < 0){
+                direction = 'NE'
+            }else{
+                direction = ' '
+            }
+
+
+
+  // Check for obstacles
+        for(let i = 0; i < obstaclesArray.length;i++){
+                    // console.log(obstaclesArray[i])
+                    if(isCollide(player, obstaclesArray[i])){
+                        // console.log('collided with box')
+                    
+                        switch (direction){
+                            case 'SW':
+                                dirX *= -1;
+                            break;
+                            case 'SE':
+                                dirY *= -1;
+                            break;
+                            case 'NW':
+                                dirY *= -1;
+                            break;
+                            case 'NE':
+                                dirX *= -1;
+                            break;
+                            default:
+                                console.log('no collision')
+                            
+                        }
+                        break;
+                    }
+                }
+
+
+
+
+
+            // Move the player
+            x += dirX * speed;
+            y += dirY * speed;
+            player.style.left = x + 'px';
+            player.style.top = y + 'px';
+
+
+            // Collision with junk
+            for (let i = 0; i < junkCount; i++) {
+                const junk = document.getElementsByClassName('junk')[i];
+                if (isCollide(player, junk) && !visitedJunk.includes(i)) {
+                    visitedJunk.push(i);
+                    junk.style.display = "none";
+                    targets--;
+                }
+            }
+
+          
+
+
+            requestAnimationFrame(roamState); // Keep calling it
+        }
+
+        function isCollide(a, b) {
+            const aRect = a.getBoundingClientRect();
+            const bRect = b.getBoundingClientRect();
+            return !(aRect.bottom < bRect.top || aRect.top > bRect.bottom || aRect.right < bRect.left || aRect.left > bRect.right);
+        }
+        roamState();
+    </script>
+</body>
+</html>
